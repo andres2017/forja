@@ -66,6 +66,7 @@ export default async function CotizacionesPage() {
                   <TableHead>Cliente</TableHead>
                   <TableHead>Fecha</TableHead>
                   <TableHead className="text-right">Total</TableHead>
+                  <TableHead className="text-right">PDF</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -86,12 +87,27 @@ export default async function CotizacionesPage() {
                       <TableCell className="text-right whitespace-nowrap">
                         {formatoPrecio.format(Number(cot.total) || 0)}
                       </TableCell>
+                      <TableCell className="text-right">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          render={
+                            <a
+                              href={`/cotizaciones/${cot.id}/pdf`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            />
+                          }
+                        >
+                          Ver PDF
+                        </Button>
+                      </TableCell>
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
                     <TableCell
-                      colSpan={4}
+                      colSpan={5}
                       className="py-10 text-center text-sm whitespace-normal text-muted-foreground"
                     >
                       No hay cotizaciones aún.
