@@ -20,46 +20,56 @@ export default async function ClientesPage() {
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-6 sm:px-6 sm:py-10">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Clientes</h1>
-          <p className="text-sm text-muted-foreground">
-            Datos de contacto de tus clientes.
+          <h1 className="text-2xl font-bold tracking-tight">Clientes</h1>
+          <p className="mt-0.5 text-sm text-muted-foreground">
+            {clientes?.length ?? 0} cliente
+            {(clientes?.length ?? 0) === 1 ? "" : "s"} registrados
           </p>
         </div>
         <NuevoClienteDialog />
       </div>
 
-      <Card>
-        <CardContent>
+      <Card className="overflow-hidden shadow-sm">
+        <CardContent className="p-0">
           {error ? (
-            <p className="py-10 text-center text-sm whitespace-normal text-destructive">
+            <p className="py-12 text-center text-sm text-destructive">
               No se pudo cargar la lista de clientes. Verifica la conexión con
               Supabase.
             </p>
           ) : (
             <Table>
               <TableHeader>
-                <TableRow>
-                  <TableHead>Nombre</TableHead>
+                <TableRow className="bg-muted/40 hover:bg-muted/40">
+                  <TableHead className="pl-6">Nombre</TableHead>
+                  <TableHead>NIT</TableHead>
                   <TableHead>Email</TableHead>
-                  <TableHead>Teléfono</TableHead>
+                  <TableHead className="pr-6">Teléfono</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {clientes && clientes.length > 0 ? (
                   clientes.map((cliente) => (
-                    <TableRow key={cliente.id}>
-                      <TableCell>{cliente.nombre}</TableCell>
+                    <TableRow key={cliente.id} className="hover:bg-muted/30">
+                      <TableCell className="pl-6 font-medium">
+                        {cliente.nombre}
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {cliente.nit ?? "—"}
+                      </TableCell>
                       <TableCell>{cliente.email ?? "—"}</TableCell>
-                      <TableCell>{cliente.telefono ?? "—"}</TableCell>
+                      <TableCell className="pr-6">
+                        {cliente.telefono ?? "—"}
+                      </TableCell>
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
                     <TableCell
-                      colSpan={3}
-                      className="py-10 text-center text-sm whitespace-normal text-muted-foreground"
+                      colSpan={4}
+                      className="py-16 text-center text-sm text-muted-foreground"
                     >
-                      No hay clientes aún.
+                      No hay clientes aún. Agrega el primero con el botón de
+                      arriba.
                     </TableCell>
                   </TableRow>
                 )}
