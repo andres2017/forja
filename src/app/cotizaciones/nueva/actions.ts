@@ -1,16 +1,9 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
-// Esta acción se invoca directamente desde un onClick (no desde un <form>),
-// porque los datos ya viven en el estado del Client Component (cliente
-// elegido, filas de ítems, totales calculados en vivo). Pasar un objeto plano
-// serializable es más simple que armar un FormData con un array anidado de
-// ítems. Ver node_modules/next/dist/docs/01-app/01-getting-started/07-mutating-data.md
-// sección "Event Handlers": los Server Functions se pueden invocar como
-// funciones async normales con cualquier argumento serializable, no solo
-// desde formularios.
 export type GuardarCotizacionItemPayload = {
   productoId: string | null;
   cantidad: number;
@@ -39,8 +32,14 @@ export async function guardarCotizacion(
     return { error: "Selecciona un cliente." };
   }
 
-  if (payload.items.length === 0) {
-    return { error: "Agrega al menos un ítem." };
+  const itemsValidos = payload.items.filter(
+    (item) => item.productoId && item.cantidad > 0
+  );
+
+  if (itemsValidos.length === 0) {
+    return {
+      error: "Agrega al menos un ítem con producto y cantidad mayores a 0.",
+    };
   }
 
   const anio = new Date().getFullYear();
@@ -53,7 +52,7 @@ export async function guardarCotizacion(
 
   if (errorConteo) {
     return {
-      error: "No se pudo generar el número de cotización. Intenta de nuevo.",
+      error: `No se pudo generar el número de cotización: ${errorConteo.message}`,
     };
   }
 
@@ -74,11 +73,13 @@ export async function guardarCotizacion(
     .single();
 
   if (errorCotizacion || !cotizacion) {
-    return { error: "No se pudo guardar la cotización. Intenta de nuevo." };
+    return {
+      error: `No se pudo guardar la cotización: ${errorCotizacion?.message ?? "error desconocido"}`,
+    };
   }
 
   const { error: errorItems } = await supabase.from("cotizacion_items").insert(
-    payload.items.map((item) => ({
+    itemsValidos.map((item) => ({
       cotizacion_id: cotizacion.id,
       producto_id: item.productoId,
       cantidad: item.cantidad,
@@ -90,13 +91,10 @@ export async function guardarCotizacion(
 
   if (errorItems) {
     return {
-      error:
-        "La cotización se creó pero hubo un error al guardar los ítems. Intenta de nuevo.",
+      error: `La cotización se creó pero fallaron los ítems: ${errorItems.message}`,
     };
   }
 
-  // redirect() lanza una excepción de control de flujo manejada por Next.js;
-  // por eso va fuera de cualquier try/catch y como última línea (no hace
-  // falta "return redirect(...)", ver node_modules/next/dist/docs/01-app/03-api-reference/04-functions/redirect.md).
+  revalidatePath("/");
   redirect("/");
 }
