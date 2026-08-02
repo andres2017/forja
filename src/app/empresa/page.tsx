@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { EmpresaForm } from "./empresa-form";
+import { ImportDatasetForm } from "./import-dataset-form";
 
 export default async function EmpresaPage() {
   const { data } = await supabase.from("empresas").select("*").limit(1);
@@ -17,6 +18,7 @@ export default async function EmpresaPage() {
       </div>
 
       <EmpresaForm empresa={empresa} />
+      <ImportDatasetForm />
     </div>
   );
 }
