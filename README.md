@@ -192,6 +192,7 @@ Si eres dueño de una pyme, comercial o emprendedor: este sistema está pensado 
 **Andrés Vargas**  
 Ingeniero de Sistemas  
 
+🌐 Portafolio / CV: [https://andres2017.github.io/Cv2026andres/](https://andres2017.github.io/Cv2026andres/)  
 📱 WhatsApp / Teléfono: **310 817 5926**  
 ✉️ Correo: **andres9304v@gmail.com**  
 
